@@ -16,7 +16,7 @@ Before proceeding, ensure all tools are properly installed and configured.
 * In order to run the solution first of all make sure that  Docker version 24.0.6 i running on host machine
 * In order to run the solution  make sure that python 3.13 or higher is installed in your env
 ## Step 1 
-* Vlone this repo with and change working directory to this repo
+* Clone this repo with and change working directory to this repo
 ```
 git clone https://github.com/Atsyurt/mlops_tracking_server.git
 cd mlops_tracking_server
