@@ -1,3 +1,6 @@
 mlflow
 mlflow[extras]
 scikit-learn
+pandas
+numpy
+dvc
