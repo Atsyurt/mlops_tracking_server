@@ -7,6 +7,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 task-description.md
+*.csv
 # C extensions
 *.so
 .vscode
