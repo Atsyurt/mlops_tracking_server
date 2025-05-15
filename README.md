@@ -34,12 +34,32 @@ python scripts\download_data.py
 ```
 
 ## step 3
+
+* Download the data using download_data.py inside scripts folder(works for windows cmd.exe, change this if you use different terminal)
+```
+python scripts\download_data.py
+```
+
+## step 4 (Optional you can skip this part since this not required to run scripts it is just a dvc setting)
+* Initialize dvc
+```
+dvc init
+
+```
+* A few internal files are created that should be added to Git:
+```
+git commit -m "Initialize DVC"
+
+```
+
+
+## step 999
 * Please note that i used mlflow for mlops system
 * First of all You should build the docker image with this cmd in order to run mlflow tracking,registry service and api service
 ```
 docker compose build
 ```
-## step 4
+## step 1000
 * run docker containers with this cmd  in order to start services
 ```
 docker compose up
