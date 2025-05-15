@@ -36,12 +36,25 @@ EXPECTED_SHA256 = None
 def setup_directories():
     """Create necessary directories if they don't exist."""
     # TODO: Implement this function
+    dataset_dir = Path("./data")
+    dataset_dir.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
+    dataset_path = dataset_dir / "creditcard-data.csv"
+    return dataset_path
     pass
 
-def download_data():
+def download_data(dataset_path):
     """Download the dataset from the source URL."""
     # TODO: Implement this function
-    pass
+
+    # Download the dataset
+    response = requests.get(DATA_URL)
+    if response.status_code == 200:
+        with open(dataset_path, "wb") as file:
+            file.write(response.content)
+        print(f"Download successful! File saved at: {dataset_path}")
+    else:
+        print("Failed to download dataset.")
+        pass
 
 def validate_data():
     """Validate the downloaded data file integrity."""
