@@ -106,6 +106,24 @@ services:
           echo 'dataset-bucket already exists'
         fi
         "
+      # entrypoint: >
+      #   bash -c "
+      #   mc alias set minio http://minio:9000 user WW4e69Wwcv0w &&
+      #   if ! mc ls minio/models-bucket; then
+      #     mc mb minio/models-bucket
+      #   else
+      #     echo 'models-bucket already exists'
+      #   fi &&
+      #   if ! mc ls minio/dataset-bucket; then
+      #     mc mb minio/dataset-bucket
+      #   else
+      #     echo 'dataset-bucket already exists'
+      #   fi &&
+      #   mc admin accesskey create        \
+      #   minio/dataset-bucket user               \
+      #   --access-key useraccesskey  \
+      #   --secret-key usersecretkey  \
+      #   "
 
 #volumes:
   # TODO: Define persistent volumes

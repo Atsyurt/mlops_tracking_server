@@ -51,7 +51,34 @@ dvc init
 git commit -m "Initialize DVC"
 
 ```
+* Metadata about your dataset should be versioned
+```
+dvc add dataset/creditcard-data.csv
+```
 
+## step 4
+* Please note that i used mlflow for mlops system
+* First of all You should build the infrastructre with this  docker compose file use this cmd in order to run mlflow tracking,mlflow backend, artifacts store and data storage
+```
+docker compose build
+```
+* Get Docker services up and running
+
+```
+docker compose up
+```
+## step 5
+*Set remote storage for the dataset and add original data for initila commit with dvc
+```
+<!-- set AWS_ACCESS_KEY_ID=user
+set AWS_SECRET_ACCESS_KEY=WW4e69Wwcv0w -->
+dvc remote modify minio access_key_id user
+dvc remote modify minio secret_access_key WW4e69Wwcv0w
+dvc remote add -d minio s3://dataset-bucket -f
+dvc remote modify minio endpointurl http://localhost:9000
+dvc remote modify minio access_key_id user
+dvc remote modify minio secret_access_key WW4e69Wwcv0w
+```
 
 ## step 999
 * Please note that i used mlflow for mlops system

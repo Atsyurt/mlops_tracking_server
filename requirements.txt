@@ -4,3 +4,5 @@ scikit-learn
 pandas
 numpy
 dvc
+minio
+dvc-s3
