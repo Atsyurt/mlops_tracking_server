@@ -52,8 +52,14 @@ def parse_args():
     return parser.parse_args()
 
 def setup_directories():
+
     """Create necessary directories if they don't exist."""
-    # TODO: Implement this function
+    
+    # Remove all files and subdirectories for raw data
+    for item in os.listdir(RAW_DATA_DIR):
+        item_path = os.path.join(RAW_DATA_DIR, item)
+        if os.path.isfile(item_path) or os.path.islink(item_path):
+            os.remove(item_path)  # Delete file or symlink
     PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
     logger.info("Created processed data directory.")
 
