@@ -111,14 +111,23 @@ dvc checkout
 
 
 ## step 6
-* Run train.py script inorder to train model
+* Run train.py script in order to train model
 
 ```
 python scripts\train.py --data-rev localv_1_processed
 
 ```
 
-## step 5555
+
+## step 6
+* Run validate.py script, in order to validate model
+
+```
+python scripts\validate.py --model-version 1 --data-rev localv_1_processed  --start-api
+
+```
+
+## Usefull cmds
 *Set remote storage for the dataset and add original data for initila commit with dvc here s some usefull cmds for the dvc with git
 ```
 git log --oneline
@@ -150,18 +159,12 @@ git tag
 <!-- set AWS_ACCESS_KEY_ID=user
 set AWS_SECRET_ACCESS_KEY=WW4e69Wwcv0w -->
 
-## step 999
-* Please note that i used mlflow for mlops system
-* First of all You should build the docker image with this cmd in order to run mlflow tracking,registry service and api service
-```
-docker compose build
-```
-## step 1000
-* run docker containers with this cmd  in order to start services
-```
-docker compose up
+## Final
+* Please note that i used mlflow ,git,dvc tool,minio and postgres for mlops system
+* İ developed using Windows 11 OS
+* for versioning i utilized git tags locally
+* i seperated preprocess.py, train.py, validate.py run logs in mlflow to provide easy understanding(i can combine them in single run but i dont want to)
 
-```
 * Right now your mlflow service should be accessible from
 [Mlflow tracking ](http://localhost:5000)
 

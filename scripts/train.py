@@ -186,15 +186,17 @@ def save_model(model):
 def main():
     """Main function to orchestrate the model training pipeline."""
     args = parse_args()
+    #setup directories and mlflow setup
     setup_directories()
     setup_mlflow()
-    
+    #load train_df, val_df, test_df
     train_df, val_df, test_df = load_data(args.data_rev)
     X_train, y_train = train_df.drop("Class", axis=1), train_df["Class"]
     X_val, y_val = val_df.drop("Class", axis=1), val_df["Class"]
-
+    #train the model
     model = train_model(X_train, y_train, X_val, y_val)
     metrics = evaluate_model(model, X_val, y_val)
+    #log to mlflow
     log_to_mlflow(model, model.get_params(), metrics, X_val, y_val)
     save_model(model)
     mlflow.end_run()
