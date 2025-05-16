@@ -14,18 +14,24 @@ services:
         dockerfile: "${DOCKERFILE:-Dockerfile}"
       depends_on:
         - postgres
-        - artifacts-server
+        - minio
       expose:
         - "5000"
       ports:
         # MLflow UI is available at http://localhost:5000
         - "5000:5000"
+      environment:
+        - AWS_ACCESS_KEY_ID=user
+        - AWS_SECRET_ACCESS_KEY=WW4e69Wwcv0w
+        - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
+        - MLFLOW_S3_IGNORE_TLS=true
       command: >
         mlflow server
         --host 0.0.0.0
         --port 5000
         --backend-store-uri postgresql://user:password@postgres:5432/db
-        --default-artifact-root http://0.0.0.0:5500/api/2.0/mlflow-artifacts/artifacts/experiments
+        --serve-artifacts
+        --artifacts-destination s3://models-bucket
         --gunicorn-opts "--log-level debug"
 
   # Define database for MLflow
@@ -38,29 +44,6 @@ services:
         POSTGRES_USER: user
         POSTGRES_PASSWORD: password
 
-  # Define another mlflow again for artifact store
-  # ...
-    artifacts-server:
-      build:
-        context: .
-        dockerfile: "${DOCKERFILE:-Dockerfile}"
-      depends_on:
-        - minio-create-bucket
-      expose:
-        - "5500"
-      ports:
-        - "5500:5500"
-      environment:
-        MLFLOW_S3_ENDPOINT_URL: http://minio:9000
-        AWS_ACCESS_KEY_ID: "user"
-        AWS_SECRET_ACCESS_KEY: "WW4e69Wwcv0w"
-      command: >
-        mlflow server
-        --host 0.0.0.0
-        --port 5500
-        --artifacts-destination s3://models-bucket
-        --gunicorn-opts "--log-level debug"
-        --artifacts-only
   
 
   # Define MinIO  remote storage
