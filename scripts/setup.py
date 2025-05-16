@@ -17,9 +17,7 @@ import hashlib
 import pandas as pd
 from pathlib import Path
 import subprocess
-
 import boto3
-
 
 
 
@@ -39,15 +37,6 @@ RAW_DATA_FILE = RAW_DATA_DIR / "creditcard-data.csv"
 # Expected SHA256 checksum of the file (you should calculate this for your specific dataset)
 EXPECTED_SHA256 = None
 
-
-
-
-
-
-import os
-import requests
-import logging
-
 # Setup logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -55,7 +44,7 @@ logger = logging.getLogger(__name__)
 DATA_URL = "https://example.com/dataset.csv"  # Replace with actual dataset URL
 
 
-
+# delete all old files from s3 minio storage
 def delete_allfiles_from_s3():
     endpoint_url = "http://localhost:9000"  # Adjust if running remotely
     aws_access_key_id = "user"
