@@ -181,8 +181,8 @@ def create_visualizations(metrics):
 
     # Save the plot
     plot_path = "performance_plot.png"
-    plt.savefig(plot_path)
-    logger.info(f"Saved performance comparison plot to {plot_path}")
+    plt.savefig(VALIDATION_DIR/ plot_path)
+    logger.info(f"Saved performance comparison plot to {VALIDATION_DIR}")
 
     # Log the plot to MLflow
     mlflow.log_artifact(plot_path)

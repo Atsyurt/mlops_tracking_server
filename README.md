@@ -152,7 +152,8 @@ set AWS_SECRET_ACCESS_KEY=WW4e69Wwcv0w -->
 * for versioning i utilized git tags locally
 * i seperated preprocess.py, train.py, validate.py run logs in mlflow to provide easy understanding(i can combine them in single run but i dont want to)
 *if you want to reproduce results again please follow steps from the step1
-* Right now your mlflow service should be accessible from
-[Mlflow tracking ](http://localhost:5000)
 
-![Alt text](img/step2_mlflow_service.png)
+
+## Contact
+
+Ayhan Taşyurt -  [ayhantsyurt](mailto:ayhantsyurt@gmail.com)
