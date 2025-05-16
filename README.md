@@ -104,15 +104,19 @@ dvc checkout
 python scripts\train.py --data-rev localv_1_processed
 
 ```
-
+* Registered model list can be accessible from:
+[Reg. Models ](http://localhost:5000/#/models)
+![Alt text](images/step6.png)
 
 ## step 7
 * Run validate.py script, in order to validate model
 
 ```
 python scripts\validate.py --model-version 1 --data-rev localv_1_processed  --start-api
-
 ```
+* Minio srvice should be accessible from
+[Vis. plot ](http://localhost:9000)--->
+![Alt text](images/step7_1.png)
 
 ## Some Usefull cmds(just look if you want,dont execute)
 *Set remote storage for the dataset and add original data for initila commit with dvc here s some usefull cmds for the dvc with git
