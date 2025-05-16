@@ -24,6 +24,7 @@ from pathlib import Path
 import subprocess
 import joblib
 import xgboost as xgb
+import uuid
 # Import your chosen model library (e.g., xgboost, lightgbm)
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
@@ -74,6 +75,9 @@ def setup_mlflow():
         experiment_id = experiment.experiment_id
 
     mlflow.set_experiment(experiment_id=experiment_id)
+    #set custom run name for this exp
+    unique_id = uuid.uuid4()
+    mlflow.set_tag('mlflow.runName', 'exp_train_part_logs_'+str(unique_id))
     print(f"MLflow experiment set up: id {experiment_id}")
 
 def load_data(data_rev):
@@ -136,11 +140,11 @@ def evaluate_model(model, X_val, y_val):
 
 def log_to_mlflow(model, params, metrics, X_val, y_val):
     """Log the model, parameters, and metrics to MLflow."""
-    with mlflow.start_run():
-        mlflow.log_params(params)
-        mlflow.log_metrics(metrics)
-        mlflow.xgboost.log_model(model, "fraud_detection_model")
-        logger.info("Model logged to MLflow")
+
+    mlflow.log_params(params)
+    mlflow.log_metrics(metrics)
+    mlflow.xgboost.log_model(model, "fraud_detection_model")
+    logger.info("Model logged to MLflow")
 
 
 def save_model(model):
@@ -164,6 +168,7 @@ def main():
     metrics = evaluate_model(model, X_val, y_val)
     log_to_mlflow(model, model.get_params(), metrics, X_val, y_val)
     save_model(model)
+    mlflow.end_run()
     
     logger.info("Model training completed successfully")
 

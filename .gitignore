@@ -11,6 +11,7 @@ task-description.md
 # C extensions
 *.so
 .vscode
+*.pkl
 # Distribution / packaging
 .Python
 build/

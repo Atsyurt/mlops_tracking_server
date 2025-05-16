@@ -27,7 +27,7 @@ import subprocess
 from sklearn.utils import resample
 import mlflow
 # Import additional libraries as needed (e.g., imbalanced-learn for SMOTE)
-
+import uuid
 
 # Setup logging
 logging.basicConfig(
@@ -72,6 +72,9 @@ def setup_mlflow():
         experiment_id = experiment.experiment_id
 
     mlflow.set_experiment(experiment_id=experiment_id)
+    # add custom name for run
+    unique_id = uuid.uuid4()
+    mlflow.set_tag('mlflow.runName', 'exp_preprocess_part_logs_'+str(unique_id))
     print(f"MLflow experiment set up: id {experiment_id}")
 
 
@@ -285,6 +288,7 @@ def main():
     save_processed_data(train_df, val_df, test_df)
     stats = {"DVC Revision": args.data_rev}
     log_to_mlflow(stats, train_df, val_df, test_df)
+    mlflow.end_run()
 
 
 
