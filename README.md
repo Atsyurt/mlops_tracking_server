@@ -69,6 +69,47 @@ docker compose up
 ```
 
 ## step 5
+* Run setup.py inorder to setup dvc data download
+
+```
+python scripts\setup.py
+
+```
+
+
+* original dataset saved as "localv_1" tag version
+## step 6
+* Run preprocess.py inorder to setup dvc data download
+
+```
+python scripts\preprocess.py localv_1
+
+```
+* Processed datasets saved as "localv_1_processed" tag version
+
+* if you want to see original dataset and processed versions run
+ ```
+
+git tag
+
+```
+* You should see similiar output
+ ```
+localv_1
+localv_1_processed
+```
+* you can switch speicific local dataset version by using
+ ```
+git checkout localv_1
+dvc checkout
+
+or
+
+git checkout localv_1_processed
+dvc checkout
+ ```
+
+## step 5555
 *Set remote storage for the dataset and add original data for initila commit with dvc here s some usefull cmds for the dvc with git
 ```
 git log --oneline
