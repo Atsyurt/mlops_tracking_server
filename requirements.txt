@@ -6,3 +6,4 @@ numpy
 dvc
 minio
 dvc-s3
+xgboost
