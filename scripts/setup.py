@@ -224,19 +224,6 @@ def initialize_dvc(data_folder,data_path):
         logger.warning(f"File '{old_file_path}' does not exist, skipping removal.")
 
 
-    # if os.path.exists(data_folder):
-        
-    #     #file+".dvc"
-    #     old_file_path=str(data_path)+".dvc"
-    #     print("sdadsasdasdsdasda",old_file_path)
-    #     if os.path.exists(old_file_path):
-    #         # Remove from Git cache
-            
-    #         subprocess.run(["git", "rm", "--cached", str(old_file_path)], check=True)
-    #         # Remove from DVC tracking
-    #         subprocess.run(["dvc", "remove", str(old_file_path)], check=True)
-    #         logger.info("Successfully removed old files for tracking")
-        
     print("DVC setup begins initially for original data from scratch...")
     if os.path.exists(data_path):
         subprocess.run(["dvc", "add", data_path], check=True)
