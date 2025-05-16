@@ -27,9 +27,7 @@ import subprocess
 from sklearn.utils import resample
 import mlflow
 # Import additional libraries as needed (e.g., imbalanced-learn for SMOTE)
-os.environ['MLFLOW_TRACKING_URI'] = 'http://localhost:5000'
-# Set the MLflow tracking username who is created this work
-os.environ['MLFLOW_TRACKING_USERNAME'] = "user"
+
 
 # Setup logging
 logging.basicConfig(
@@ -62,6 +60,9 @@ def setup_directories():
 def setup_mlflow():
     """Configure MLflow tracking."""
     mlflow.set_experiment("creditcard_fraud_detection")
+    os.environ['MLFLOW_TRACKING_URI'] = 'http://localhost:5000'
+    # Set the MLflow tracking username who is created this work
+    os.environ['MLFLOW_TRACKING_USERNAME'] = "user"
     logger.info("MLflow tracking set up.")
 
 
