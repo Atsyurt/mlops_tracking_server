@@ -168,11 +168,12 @@ git tag
 set AWS_SECRET_ACCESS_KEY=WW4e69Wwcv0w -->
 
 ## Final
-* Please note that i used mlflow ,git,dvc tool,minio and postgres for mlops system
-* İ developed using Windows 11 OS
-* for versioning i utilized git tags locally
-* i seperated preprocess.py, train.py, validate.py run logs in mlflow to provide easy understanding(i can combine them in single run but i dont want to)
-*if you want to reproduce results again please follow steps from the step1
+* I used MLflow, Git, DVC, MinIO, and PostgreSQL to build the MLOps system.
+* Developed on Windows 11.
+* For version control, I utilized Git tags locally.
+* I separated the logs for preprocess.py, train.py, and validate.py in MLflow to enhance clarity. (Although I could combine them into a single run, I prefer keeping them separate for better readability.)
+* If you want to reproduce the results, please follow the steps starting from Step 1.
+
 
 
 ## Contact
