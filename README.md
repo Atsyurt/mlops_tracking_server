@@ -67,18 +67,38 @@ docker compose build
 ```
 docker compose up
 ```
+
 ## step 5
-*Set remote storage for the dataset and add original data for initila commit with dvc
+*Set remote storage for the dataset and add original data for initila commit with dvc here s some usefull cmds for the dvc with git
 ```
-<!-- set AWS_ACCESS_KEY_ID=user
-set AWS_SECRET_ACCESS_KEY=WW4e69Wwcv0w -->
+git log --oneline
+git checkout 839ed86 dataset\creditcard-data.csv.dvc
+dvc checkout
+
+git rm --cached dataset\creditcard-data.csv.dvc
+dvc remove dataset\creditcard-data.csv.dvc
+
+dvc add dataset\creditcard-data.csv
+
 dvc remote modify minio access_key_id user
 dvc remote modify minio secret_access_key WW4e69Wwcv0w
 dvc remote add -d minio s3://dataset-bucket -f
 dvc remote modify minio endpointurl http://localhost:9000
-dvc remote modify minio access_key_id user
-dvc remote modify minio secret_access_key WW4e69Wwcv0w
+git add dataset\creditcard-data.csv.dvc
+
 ```
+* Since DVC works alongside Git, you should first commit your changes and then create a tag:
+```
+git tag -a v1.0 -m "Data version 1.0"
+git chechout v1.0
+dvc chechout
+git push origin v1.0
+git tag
+```
+
+*Note  if credientals are not working set credientals with env varibles for example in windows os
+<!-- set AWS_ACCESS_KEY_ID=user
+set AWS_SECRET_ACCESS_KEY=WW4e69Wwcv0w -->
 
 ## step 999
 * Please note that i used mlflow for mlops system
