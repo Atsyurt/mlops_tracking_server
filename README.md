@@ -82,7 +82,7 @@ python scripts\setup.py
 * Run preprocess.py inorder to setup dvc data download
 
 ```
-python scripts\preprocess.py localv_1
+python scripts\preprocess.py --data-rev localv_1
 
 ```
 * Processed datasets saved as "localv_1_processed" tag version
