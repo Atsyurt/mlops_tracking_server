@@ -15,6 +15,7 @@ Before proceeding, ensure all tools are properly installed and configured.
 * Please use a windows 11 machine for docker service host
 * In order to run the solution first of all make sure that  Docker version 24.0.6 i running on host machine
 * In order to run the solution  make sure that python 3.13 or higher is installed in your env
+
 ## Step 1 
 * Clone this repo with and change working directory to this repo
 ```
@@ -28,35 +29,9 @@ cd mlops_tracking_server
 ```
 pip install -r requirements.txt
 ```
-* Download the data using download_data.py inside scripts folder(works for windows cmd.exe, change this if you use different terminal)
-```
-python scripts\download_data.py
-```
+
 
 ## step 3
-
-* Download the data using download_data.py inside scripts folder(works for windows cmd.exe, change this if you use different terminal)
-```
-python scripts\download_data.py
-```
-
-## step 4 (Optional you can skip this part since this not required to run scripts it is just a dvc setting)
-* Initialize dvc
-```
-dvc init
-
-```
-* A few internal files are created that should be added to Git:
-```
-git commit -m "Initialize DVC"
-
-```
-* Metadata about your dataset should be versioned
-```
-dvc add dataset/creditcard-data.csv
-```
-
-## step 4
 * Please note that i used mlflow for mlops system
 * First of all You should build the infrastructre with this  docker compose file use this cmd in order to run mlflow tracking,mlflow backend, artifacts store and data storage
 ```
@@ -67,8 +42,16 @@ docker compose build
 ```
 docker compose up
 ```
+* Right now your mlflow service should be accessible from
+[Mlflow tracking ](http://localhost:5000)
 
-## step 5
+![Alt text](images/step3.png)
+* Minio srvice should be accessible from
+[Minio ](http://localhost:9000)--->(http://localhost:9001)
+
+![Alt text](images/step3_1.png)
+
+## step 4
 * Run setup.py inorder to setup dvc data download
 
 ```
@@ -76,9 +59,13 @@ python scripts\setup.py
 
 ```
 
-
 * original dataset saved as "localv_1" tag version
-## step 6
+* use this cmd to see this version
+```
+git tag
+```
+
+## step 5
 * Run preprocess.py inorder to setup dvc data preprocess
 
 ```
@@ -119,7 +106,7 @@ python scripts\train.py --data-rev localv_1_processed
 ```
 
 
-## step 6
+## step 7
 * Run validate.py script, in order to validate model
 
 ```
@@ -127,7 +114,7 @@ python scripts\validate.py --model-version 1 --data-rev localv_1_processed  --st
 
 ```
 
-## Usefull cmds
+## Some Usefull cmds(just look if you want,dont execute)
 *Set remote storage for the dataset and add original data for initila commit with dvc here s some usefull cmds for the dvc with git
 ```
 git log --oneline
@@ -164,7 +151,7 @@ set AWS_SECRET_ACCESS_KEY=WW4e69Wwcv0w -->
 * İ developed using Windows 11 OS
 * for versioning i utilized git tags locally
 * i seperated preprocess.py, train.py, validate.py run logs in mlflow to provide easy understanding(i can combine them in single run but i dont want to)
-
+*if you want to reproduce results again please follow steps from the step1
 * Right now your mlflow service should be accessible from
 [Mlflow tracking ](http://localhost:5000)
 
