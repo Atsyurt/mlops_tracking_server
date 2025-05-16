@@ -78,7 +78,7 @@ def setup_directories():
     print("Directory setup process...")
     dataset_dir = RAW_DATA_DIR
     dataset_dir.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
-    dataset_path = dataset_dir / "creditcard-data.csv"
+    dataset_path = RAW_DATA_FILE
     logger.info("Directory setup process is done.")
     return dataset_dir, dataset_path
     pass
