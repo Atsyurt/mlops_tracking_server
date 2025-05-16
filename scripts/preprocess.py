@@ -92,10 +92,28 @@ def load_data(data_rev):
         sys.exit(1)
 
 
-def analyze_data(df):
+def analyze_data(df,train_df, val_df, test_df):
     """Perform exploratory data analysis and log results to MLflow."""
-    mlflow.log_metric("Number of samples", len(df))
-    mlflow.log_metric("Class distribution", df["Class"].value_counts().to_dict())
+    mlflow.log_metric("OriginaL Data Number of samples", len(df))
+    class_counts=df["Class"].value_counts()
+    for class_label, count in class_counts.items():
+        mlflow.log_metric(f"Original_Data_Class_{class_label}_count", int(count))
+
+    mlflow.log_metric("Train data Number of samples", len(train_df))
+    class_counts=train_df["Class"].value_counts()
+    for class_label, count in class_counts.items():
+        mlflow.log_metric(f"Train_Data_Class_{class_label}_count", int(count))
+
+    mlflow.log_metric("Validation Number of samples", len(val_df))
+    class_counts=val_df["Class"].value_counts()
+    for class_label, count in class_counts.items():
+        mlflow.log_metric(f"Validation_Data_Class_{class_label}_count", int(count))
+
+    mlflow.log_metric("Test Number of samples", len(test_df))
+    class_counts=test_df["Class"].value_counts()
+    for class_label, count in class_counts.items():
+        mlflow.log_metric(f"Test_Data_Class_{class_label}_count", int(count))
+
     logger.info("Logged dataset statistics to MLflow.")
 
 
@@ -106,8 +124,6 @@ def preprocess_data(df):
     # 2. Normalize features
     # 3. Split into train/validation/test sets
     # Check class distribution
-    print("Original class distribution:")
-    print(df["Class"].value_counts())
 
     # Separate majority and minority classes
     df_majority = df[df["Class"] == 0]  # Non-fraudulent transactions
@@ -124,28 +140,36 @@ def preprocess_data(df):
 
     # Check new class distribution
     print("\nNew class distribution after undersampling:")
-    print(df_undersampled["Class"].value_counts())
-    X = df_undersampled.drop(columns=["Class"])
+    #print(df_undersampled["Class"].value_counts())
     y = df_undersampled["Class"]
+    y=y.to_numpy()
+    temp_df=df_undersampled
+    temp_df=temp_df.drop(columns=["Class"])
+    column_names=temp_df.columns
+    X = df_undersampled.drop(columns=["Class"]).to_numpy()
+
 
     #Normalize features
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
+    #X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
         
     # Split into train, validation, and test sets
     X_train, X_temp, y_train, y_temp = train_test_split(X_scaled,y, test_size=0.3, random_state=42)
-    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5, random_state=42)
+    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.6, random_state=42)
         
     # Convert to DataFrame for saving
-    train_df = pd.DataFrame(X_train, columns=X.columns)
-    train_df["Class"] = y_train
-    val_df = pd.DataFrame(X_val, columns=X.columns)
-    val_df["Class"] = y_val
-    test_df = pd.DataFrame(X_test, columns=X.columns)
-    test_df["Class"] = y_test
+    train_df = pd.DataFrame(X_train, columns=column_names)
+
+    train_df["Class"] = y_train.astype("int")
+    val_df = pd.DataFrame(X_val, columns=column_names)
+    val_df["Class"] = y_val.astype("int")
+    test_df = pd.DataFrame(X_test, columns=column_names)
+    test_df["Class"] = y_test.astype("int")
 
     logger.info("Preprocessed data and split into train, validation, and test sets.")
-    pass
+    return train_df,val_df,test_df
+
 
 def save_processed_data(train_df, val_df, test_df):
     """Save processed datasets and track with DVC."""
@@ -157,21 +181,78 @@ def save_processed_data(train_df, val_df, test_df):
     val_df.to_csv(val_path, index=False)
     test_df.to_csv(test_path, index=False)
 
-    # Track processed data with DVC
-    subprocess.run(["dvc", "add", str(train_path)], check=True)
-    subprocess.run(["dvc", "add", str(val_path)], check=True)
-    subprocess.run(["dvc", "add", str(test_path)], check=True)
+    ##-------- Track processed datasets with DVC
 
-    subprocess.run(["dvc", "push", "-r","minio"], check=True)
+    try:
+        # create new dataset version
+        subprocess.run(["dvc", "add", str(train_path)], check=True)
+    except subprocess.CalledProcessError as e:
+        logger.warning("Error dvc adding skiping this part")
+    try:
+        new_dvc_file=str(train_path)+".dvc"
+        print("git commits for  DVC setup started")
+        # create dvc files and  Commit changes for train data commit (you should use Git and configure your own credentials)
+        subprocess.run(["git", "add", ".dvc", new_dvc_file], check=True)
+    except subprocess.CalledProcessError as e:
+        logger.warning("Error git commiting the dvc skiping this part")
 
+    
+    try:
+        # create new dataset version for val data
+        subprocess.run(["dvc", "add", str(val_path)], check=True)
+    except subprocess.CalledProcessError as e:
+        logger.warning("Error dvc adding skiping this part")
+    try:
+        new_dvc_file=str(val_path)+".dvc"
+        print("git commits for  DVC setup started")
+        # create dvc files and  Commit changes for val. data commit (you should use Git and configure your own credentials)
+        subprocess.run(["git", "add", ".dvc", new_dvc_file], check=True)
+    except subprocess.CalledProcessError as e:
+        logger.warning("Error git commiting the dvc skiping this part")
+    
+
+    try:
+        # create new dataset version for test data
+        subprocess.run(["dvc", "add", str(test_path)], check=True)
+    except subprocess.CalledProcessError as e:
+        logger.warning("Error dvc adding skiping this part")
+    try:
+        new_dvc_file=str(test_path)+".dvc"
+        print("git commits for  DVC setup started")
+        # create dvc files and  Commit changes for test data commit (you should use Git and configure your own credentials)
+        subprocess.run(["git", "add", ".dvc", new_dvc_file], check=True)
+    except subprocess.CalledProcessError as e:
+        logger.warning("Error git commiting the dvc skiping this part")
+    
+
+    ##--------  Commit dvcs,Versioning and push datasets
+    try:
+    #newly data dvcs commit
+        commit_message=str("newly created datasets(train,val,test) loaded to dvc")
+        subprocess.run(["git", "commit", "-m", commit_message], check=True)
+        logger.info(" git commits is done.")
+    except subprocess.CalledProcessError as e:
+        logger.warning("Error git commiting the dvc skiping this part")
+
+
+    try:
+        #create version tag for the newly created data after commiting them
+        print("Data is versioning...")
+        subprocess.run(["git", "tag", "localv_1_processed"], check=True)
+        logger.info("Data versioning is done")
+    except subprocess.CalledProcessError as e:
+        logger.warning("Error git versioning skiping this part")
+    
+
+
+    try:
+    #push data to storage with dvc to s3 minio bucket
+        print("Datasets are pushing to storage...")
+        subprocess.run(["dvc", "push", "-r","minio"], check=True)
+        logger.info("Data pushing is done")
+    except subprocess.CalledProcessError as e:
+        logger.warning("Error dvc pushing skiping this part")
     #create version tag for the initial data
-    print("Data is versioning...")
-    subprocess.run(["git", "tag", "localv_1_processed"], check=True)
-    logger.info("Data versioning is done")
-    #push data to sotarage
-    print("Datasets are pushing to storage...")
-    subprocess.run(["dvc", "push", "-r","minio"], check=True)
-    logger.info("Data pushing is done")
 
     logger.info("Processed datasets saved and tracked with DVC.")
 
@@ -182,11 +263,6 @@ def log_to_mlflow(stats, train_df, val_df, test_df):
     mlflow.log_metric("Validation size", len(val_df))
     mlflow.log_metric("Test size", len(test_df))
     logger.info("Logged preprocessing stats to MLflow.")
-
-
-
-    
-    pass
 
 def main():
     """Main function to orchestrate the data preprocessing pipeline."""
@@ -203,8 +279,9 @@ def main():
     setup_directories()
     setup_mlflow()
     df=load_data(args.data_rev)
-    analyze_data(df)
     train_df, val_df, test_df = preprocess_data(df)
+
+    analyze_data(df,train_df, val_df, test_df)
     save_processed_data(train_df, val_df, test_df)
     stats = {"DVC Revision": args.data_rev}
     log_to_mlflow(stats, train_df, val_df, test_df)
