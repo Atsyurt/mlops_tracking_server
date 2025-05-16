@@ -107,19 +107,48 @@ def load_data(data_rev):
 
 
 def train_model(X_train, y_train, X_val, y_val):
-    """Train and tune the model."""
+    """Train and tune the model, register top models with MLflow."""
+    
     params = {
-        "n_estimators": [100, 200, 300],
-        "max_depth": [3, 5, 7],
-        "learning_rate": [0.01, 0.1, 0.2],
+        "n_estimators": [50, 100, 200, 300, 400, 500, 600, 700, 800, 900],
+        "max_depth": [3, 5, 7, 9, 11, 13, 15, 17, 19, 21],
+        "learning_rate": [0.01, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5],
     }
     
     model = xgb.XGBClassifier()
-    search = RandomizedSearchCV(model, params, cv=3, scoring="roc_auc", n_jobs=-1)
+    search = RandomizedSearchCV(model, params, cv=3, scoring="roc_auc", n_jobs=-1, n_iter=10)
     search.fit(X_train, y_train)
     
+    # Extract the top three models based on score
+    sorted_indices = sorted(range(len(search.cv_results_["mean_test_score"])), 
+                            key=lambda i: search.cv_results_["mean_test_score"][i], 
+                            reverse=True)[:3]
+
     best_model = search.best_estimator_
     logger.info(f"Best model selected with parameters: {search.best_params_}")
+
+    # Start MLflow run and log models
+    mlflow.sklearn.log_model(best_model, "best_model")
+    mlflow.log_params(search.best_params_)
+    mlflow.log_metric("roc_auc", search.best_score_)
+
+    # Register the best model as "champion"
+    best_model_uri = f"runs:/{mlflow.active_run().info.run_id}/best_model"
+    mlflow.register_model(best_model_uri, "BestXGBModel")
+    mlflow.set_tag("champion_model", "true")
+
+    # Register top three models as "lowmodel"
+    for i, idx in enumerate(sorted_indices):
+            model_params = {key: params[key][idx % len(params[key])] for key in params}
+            candidate_model = xgb.XGBClassifier(**model_params)
+            candidate_model.fit(X_train, y_train)
+
+            model_name = f"LowXGBModel_{i+1}"
+            mlflow.sklearn.log_model(candidate_model, model_name)
+            
+            model_uri = f"runs:/{mlflow.active_run().info.run_id}/{model_name}"
+            mlflow.register_model(model_uri, "LowXGBModel")
+            mlflow.set_tag("lowmodel", "true")
 
     return best_model
 
