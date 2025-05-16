@@ -90,8 +90,8 @@ git add dataset\creditcard-data.csv.dvc
 * Since DVC works alongside Git, you should first commit your changes and then create a tag:
 ```
 git tag -a v1.0 -m "Data version 1.0"
-git chechout v1.0
-dvc chechout
+git checkout v1.0
+dvc checkout
 git push origin v1.0
 git tag
 ```

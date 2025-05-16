@@ -39,7 +39,7 @@ RAW_DATA_FILE = RAW_DATA_DIR / "creditcard-data.csv"
 # Expected SHA256 checksum of the file (you should calculate this for your specific dataset)
 EXPECTED_SHA256 = None
 
-def delete_allfiles_s3():
+def delete_allfiles_from_s3():
     endpoint_url = "http://localhost:9000"  # Adjust if running remotely
     aws_access_key_id = "user"
     aws_secret_access_key = "WW4e69Wwcv0w"
@@ -71,6 +71,18 @@ def delete_allfiles_s3():
 
 
 
+import os
+import requests
+import logging
+
+# Setup logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+DATA_URL = "https://example.com/dataset.csv"  # Replace with actual dataset URL
+
+
+
 
 
 
@@ -82,25 +94,32 @@ def setup_directories():
     dataset_dir.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
     dataset_path = dataset_dir / "creditcard-data.csv"
     logger.info("Directory setup process is done.")
-    return dataset_path
+    return dataset_dir, dataset_path
     pass
 
 def download_data(dataset_path):
-    """Download the dataset from the source URL."""
-    # TODO: Implement this function
-
-    # Download the dataset
+    """Download the dataset from the source URL if not already available."""
+    
+    # Check if the dataset already exists
+    if os.path.exists(dataset_path):
+        print(f"Dataset already exists at {dataset_path}. Skipping download.")
+        logger.info("Dataset already exists, skipping download.")
+        return
+    
     print("Data is downloading...")
-    response = requests.get(DATA_URL)
-    if response.status_code == 200:
+    
+    try:
+        response = requests.get(DATA_URL)
+        response.raise_for_status()  # Raise an error for unsuccessful requests
+        
         with open(dataset_path, "wb") as file:
             file.write(response.content)
+        
         print(f"Download successful! File saved at: {dataset_path}")
-        logger.info("Data donwload process is done.")
-    else:
-        logger.error("Failed to download dataset")
-        pass
+        logger.info("Data download process is done.")
     
+    except requests.RequestException as e:
+        logger.error(f"Failed to download dataset: {e}")
 
 def validate_data(dataset_path):
     """Validate the downloaded data file integrity."""
@@ -149,34 +168,101 @@ def validate_data(dataset_path):
         logger.info("Data validaiton check test process is done.")
 
 
-def initialize_dvc():
+import os
+import subprocess
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def remove_old_file_tracking(old_file_path):
+    """Remove old file tracking from Git and DVC, handling errors gracefully."""
+    if os.path.exists(old_file_path):
+        try:
+            # Remove from Git cache
+            subprocess.run(["git", "rm", "--cached", str(old_file_path)], check=True)
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Error removing {old_file_path} from Git cache: {e}")
+
+        try:
+            # Remove from DVC tracking
+            subprocess.run(["dvc", "remove", str(old_file_path)], check=True)
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Error removing {old_file_path} from DVC tracking: {e}")
+
+        logger.info("Successfully removed old files from tracking")
+    else:
+        logger.warning(f"File '{old_file_path}' does not exist, skipping removal.")
+
+
+
+def initialize_dvc(data_folder,data_path):
     """Initialize DVC and add data to tracking."""
     # TODO: Implement this function
+
+    print("DVC Initialize process ...")
     subprocess.run(["dvc", "init","-f"], check=True)
-    data_path = "data/"
+
+    if os.path.exists(data_folder):
+        #file+".dvc"
+        old_file_path=str(data_path)+".dvc"
+        try:
+            # Remove from Git cache
+            subprocess.run(["git", "rm", "--cached", str(old_file_path)], check=True)
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Error removing {old_file_path} from Git cache: {e}")
+
+        try:
+            # Remove from DVC tracking
+            subprocess.run(["dvc", "remove", str(old_file_path)], check=True)
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Error removing {old_file_path} from DVC tracking: {e}")
+
+        logger.info("Successfully removed old files from tracking")
+    else:
+        logger.warning(f"File '{old_file_path}' does not exist, skipping removal.")
 
 
-    if os.path.exists(data_path):
-        # Remove from Git cache
-        subprocess.run(["git", "rm", "--cached", data_path], check=True)
-        # Remove from DVC tracking
-        subprocess.run(["dvc", "remove", data_path], check=True)
-        print("Successfully removed old files for tracking,  now you can start exp from start")
-
-    logger.info("DVC setup begins initially for original data from scratch")
+    # if os.path.exists(data_folder):
+        
+    #     #file+".dvc"
+    #     old_file_path=str(data_path)+".dvc"
+    #     print("sdadsasdasdsdasda",old_file_path)
+    #     if os.path.exists(old_file_path):
+    #         # Remove from Git cache
+            
+    #         subprocess.run(["git", "rm", "--cached", str(old_file_path)], check=True)
+    #         # Remove from DVC tracking
+    #         subprocess.run(["dvc", "remove", str(old_file_path)], check=True)
+    #         logger.info("Successfully removed old files for tracking")
+        
+    print("DVC setup begins initially for original data from scratch...")
     if os.path.exists(data_path):
         subprocess.run(["dvc", "add", data_path], check=True)
         subprocess.run(["dvc", "remote", "add", "-d", "minio", "s3://dataset-bucket", "-f"])
         subprocess.run(["dvc", "remote", "modify", "minio", "access_key_id", "user"])
         subprocess.run(["dvc", "remote", "modify", "minio", "secret_access_key", "WW4e69Wwcv0w"])
         subprocess.run(["dvc", "remote", "modify", "minio", "endpointurl", "http://localhost:9000"])
-
+        logger.info("DVC setup is done.")
     else:
         print(f"Data path '{data_path}' does not exist. Please check your setup.")
     
+    new_dvc_file=str(data_path)+".dvc"
+    print("git commits for  DVC setup started")
     # create dvc files and  Commit changes for initial commit (you should use Git and configure your own credentials)
-    subprocess.run(["git", "add", ".dvc", data_path], check=True)
+    subprocess.run(["git", "add", ".dvc", new_dvc_file], check=True)
     subprocess.run(["git", "commit", "-m", "Initialize DVC and add data"], check=True)
+    logger.info(" git commits is done.")
+    #create version tag for the initial data
+    print("Data is versioning...")
+    subprocess.run(["git", "tag", "localv_1"], check=True)
+    logger.info("Data versioning is done")
+    #push data to sotarage
+    print("Data is pushing to storage")
+    subprocess.run(["dvc", "push", "-r","minio"], check=True)
+    logger.info("Data pushing is done")
+
 
     pass
 
@@ -196,9 +282,11 @@ def main():
     # 2. Download data
     # 3. Validate data
     # 4. Initialize DVC and add data
-    dataset_path=setup_directories()
+    delete_allfiles_from_s3()
+    data_folder,dataset_path=setup_directories()
     download_data(dataset_path)
     validate_data(dataset_path)
+    initialize_dvc(data_folder,dataset_path)
     logger.info("Data acquisition completed successfully")
 
 if __name__ == "__main__":
