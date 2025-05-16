@@ -164,18 +164,24 @@ def initialize_dvc(data_folder,data_path):
     if os.path.exists(data_folder):
         #file+".dvc"
         old_file_path=str(data_path)+".dvc"
+        
+        try:
+            #Remove old local git tag versions for dvc
+            subprocess.run(["git", "tag","-d" ,"localv_1"], check=True)
+        except subprocess.CalledProcessError as e:
+            logger.warning("Error removing tag from local tag  skipping")
         try:
             # Remove from Git cache and old local git tag versions for dvc
             subprocess.run(["git", "rm", "--cached", str(old_file_path)], check=True)
-            subprocess.run(["git", "tag","-d" ,"localv_1"], check=True)
+            
         except subprocess.CalledProcessError as e:
-            logger.error(f"Error removing {old_file_path} from Git cache: {e}")
+            logger.warning(f"Warning removing {old_file_path} from Git cache: {e}  skipping")
 
         try:
             # Remove from DVC tracking
             subprocess.run(["dvc", "remove", str(old_file_path)], check=True)
         except subprocess.CalledProcessError as e:
-            logger.error(f"Error removing {old_file_path} from DVC tracking: {e}")
+            logger.warning(f"Warning removing {old_file_path} from DVC tracking: {e}  skipping")
 
         logger.info("Successfully removed old files from tracking")
     else:
