@@ -116,7 +116,7 @@ def validate_data(dataset_path):
         raise FileNotFoundError(f"File '{dataset_path}' does not exist.")
     
     if os.path.getsize(dataset_path) == 0:
-        logger.error(f"dataset folder is empty")
+        logger.error("dataset folder is empty")
         raise ValueError(f"File '{dataset_path}' is empty.")
     
     if not str(dataset_path).lower().endswith(".csv"):

@@ -59,11 +59,20 @@ def setup_directories():
 
 def setup_mlflow():
     """Configure MLflow tracking."""
-    mlflow.set_experiment("creditcard_fraud_detection")
-    os.environ['MLFLOW_TRACKING_URI'] = 'http://localhost:5000'
-    # Set the MLflow tracking username who is created this work
+    os.environ['MLFLOW_TRACKING_URI'] = 'http://localhost:5000'  # Adjust for remote
     os.environ['MLFLOW_TRACKING_USERNAME'] = "user"
-    logger.info("MLflow tracking set up.")
+    client = mlflow.tracking.MlflowClient()
+    exp_name="Creditcard-Fraud-Detection"
+    # Check if experiment already exists
+    experiment = client.get_experiment_by_name(exp_name)
+    if experiment is None:
+        experiment_id = client.create_experiment(exp_name)
+        
+    else:
+        experiment_id = experiment.experiment_id
+
+    mlflow.set_experiment(experiment_id=experiment_id)
+    print(f"MLflow experiment set up: id {experiment_id}")
 
 
 def load_data(data_rev):
