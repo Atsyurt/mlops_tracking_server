@@ -114,8 +114,7 @@ python scripts\train.py --data-rev localv_1_processed
 ```
 python scripts\validate.py --model-version 1 --data-rev localv_1_processed  --start-api
 ```
-* Minio srvice should be accessible from
-[Vis. plot ](http://localhost:9000)--->
+* Vis. artifacts  should be accessible artifacts session of the related run, like this one:
 ![Alt text](images/step7_1.png)
 
 ## Some Usefull cmds(just look if you want,dont execute)
