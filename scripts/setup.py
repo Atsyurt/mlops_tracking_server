@@ -228,7 +228,8 @@ def initialize_dvc(data_folder,data_path):
     print("git commits for  DVC setup started")
     # create dvc files and  Commit changes for initial commit (you should use Git and configure your own credentials)
     subprocess.run(["git", "add", ".dvc", new_dvc_file], check=True)
-    subprocess.run(["git", "commit", "-m", "Initialize DVC and add data"], check=True)
+    commit_message=str("Initialize DVC and add data")
+    subprocess.run(["git", "commit", "-m", commit_message], check=True)
     logger.info(" git commits is done.")
     #create version tag for the initial data
     print("Data is versioning...")
