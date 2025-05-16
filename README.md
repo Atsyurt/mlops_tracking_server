@@ -79,7 +79,7 @@ python scripts\setup.py
 
 * original dataset saved as "localv_1" tag version
 ## step 6
-* Run preprocess.py inorder to setup dvc data download
+* Run preprocess.py inorder to setup dvc data preprocess
 
 ```
 python scripts\preprocess.py --data-rev localv_1
@@ -108,6 +108,15 @@ or
 git checkout localv_1_processed
 dvc checkout
  ```
+
+
+## step 6
+* Run train.py script inorder to train model
+
+```
+python scripts\train.py --data-rev localv_1_processed
+
+```
 
 ## step 5555
 *Set remote storage for the dataset and add original data for initila commit with dvc here s some usefull cmds for the dvc with git
