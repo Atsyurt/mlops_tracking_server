@@ -33,7 +33,7 @@ logger = logging.getLogger('data-acquisition')
 DATA_URL = "https://nextcloud.scopicsoftware.com/s/bo5PTKgpngWymGE/download/creditcard-data.csv"
 DATA_DIR = Path("data")
 RAW_DATA_DIR = DATA_DIR / "raw"
-RAW_DATA_FILE = RAW_DATA_DIR / "creditcard-data.csv"
+RAW_DATA_FILE = RAW_DATA_DIR / "creditcard.csv"
 # Expected SHA256 checksum of the file (you should calculate this for your specific dataset)
 EXPECTED_SHA256 = None
 
@@ -79,7 +79,7 @@ def setup_directories():
     """Create necessary directories if they don't exist."""
     # TODO: Implement this function
     print("Directory setup process...")
-    dataset_dir = Path("./data")
+    dataset_dir = RAW_DATA_DIR
     dataset_dir.mkdir(parents=True, exist_ok=True)  # Ensure the directory exists
     dataset_path = dataset_dir / "creditcard-data.csv"
     logger.info("Directory setup process is done.")
