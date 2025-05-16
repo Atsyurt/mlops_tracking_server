@@ -41,9 +41,6 @@ EXPECTED_SHA256 = None
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-DATA_URL = "https://example.com/dataset.csv"  # Replace with actual dataset URL
-
-
 # delete all old files from s3 minio storage
 def delete_allfiles_from_s3():
     endpoint_url = "http://localhost:9000"  # Adjust if running remotely
@@ -157,35 +154,6 @@ def validate_data(dataset_path):
         logger.info("Data validaiton check test process is done.")
 
 
-import os
-import subprocess
-import logging
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-def remove_old_file_tracking(old_file_path):
-    """Remove old file tracking from Git and DVC, handling errors gracefully."""
-    if os.path.exists(old_file_path):
-        try:
-            # Remove from Git cache
-            subprocess.run(["git", "rm", "--cached", str(old_file_path)], check=True)
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Error removing {old_file_path} from Git cache: {e}")
-
-        try:
-            # Remove from DVC tracking
-            subprocess.run(["dvc", "remove", str(old_file_path)], check=True)
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Error removing {old_file_path} from DVC tracking: {e}")
-
-        logger.info("Successfully removed old files from tracking")
-    else:
-        logger.warning(f"File '{old_file_path}' does not exist, skipping removal.")
-
-
-
 def initialize_dvc(data_folder,data_path):
     """Initialize DVC and add data to tracking."""
     # TODO: Implement this function
@@ -197,8 +165,9 @@ def initialize_dvc(data_folder,data_path):
         #file+".dvc"
         old_file_path=str(data_path)+".dvc"
         try:
-            # Remove from Git cache
+            # Remove from Git cache and old local git tag versions for dvc
             subprocess.run(["git", "rm", "--cached", str(old_file_path)], check=True)
+            subprocess.run(["git", "tag","-d" ,"localv_1"], check=True)
         except subprocess.CalledProcessError as e:
             logger.error(f"Error removing {old_file_path} from Git cache: {e}")
 
