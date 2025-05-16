@@ -58,6 +58,9 @@ docker compose up
 python scripts\setup.py
 
 ```
+* original dataset pushed to Minio srvice should be similiar like this
+![Alt text](images/step4.png)
+
 
 * original dataset saved as "localv_1" tag version
 * use this cmd to see this version
@@ -72,6 +75,12 @@ git tag
 python scripts\preprocess.py --data-rev localv_1
 
 ```
+* you can check outputs like these
+![Alt text](images/step5.png)
+![Alt text](images/step5_2.png)
+![Alt text](images/step5_1.png)
+
+
 * Processed datasets saved as "localv_1_processed" tag version
 
 * if you want to see original dataset and processed versions run
@@ -108,6 +117,11 @@ python scripts\train.py --data-rev localv_1_processed
 [Reg. Models ](http://localhost:5000/#/models)
 ![Alt text](images/step6.png)
 
+* you can check other outputs like these
+![Alt text](images/step6_2.png)
+![Alt text](images/step6_3.png)
+![Alt text](images/step6_4.png)
+
 ## step 7
 * Run validate.py script, in order to validate model
 
@@ -116,6 +130,10 @@ python scripts\validate.py --model-version 1 --data-rev localv_1_processed  --st
 ```
 * Vis. artifacts  should be accessible artifacts session of the related run, like this one:
 ![Alt text](images/step7_1.png)
+
+* you can check other outputs like these
+![Alt text](images/step7.png)
+
 
 ## Some Usefull cmds(just look if you want,dont execute)
 *Set remote storage for the dataset and add original data for initila commit with dvc here s some usefull cmds for the dvc with git
